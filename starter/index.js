@@ -38,4 +38,24 @@ $(document).ready(function () {
         .attr("id", `input-${index}`);
          // Set a unique id for each input
 
-});
+          // Declaring a variable to store current activity in local storage
+        let currentActivity = `inputActivity${index}`;
+        // Getting stored schedule for this hour
+        let storedSchedule = localStorage.getItem(currentActivity);
+
+        // checking to see if there is a schedule stored
+        if (storedSchedule) {
+            // Splitting the stored schedule into its parts
+            let splitActivity = storedSchedule.split("<>");
+            // check if the schedule is from today
+            if (splitActivity[1] === today) {
+    
+             // setting value of schedule input to the stored activity
+                scheduleInput.val(splitActivity[0]);
+            } else {
+                // If the stored schedule is not from today, remove it from local storage
+                localStorage.removeItem(currentActivity);
+            }
+        }
+
+})
