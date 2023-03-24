@@ -48,14 +48,64 @@ $(document).ready(function () {
             // Splitting the stored schedule into its parts
             let splitActivity = storedSchedule.split("<>");
             // check if the schedule is from today
-            if (splitActivity[1] === today) {
+            if (splitActivity[1] === current) {
     
              // setting value of schedule input to the stored activity
                 scheduleInput.val(splitActivity[0]);
             } else {
-                // If the stored schedule is not from today, remove it from local storage
+                // if  stored schedule is not from today, remove it from local storage
                 localStorage.removeItem(currentActivity);
             }
         }
 
-})
+  // making a save button element
+  let saveButton = $("<button>")
+  .addClass("saveBtn col-2")
+  .html("<i class='fas fa-save'></i>");
+
+// When the save button is clicked it will save the current schedule to local storage
+saveButton.click(function () {
+
+  localStorage.setItem(
+      currentActivity,
+      scheduleInput.val() + "<>" + current
+  );
+
+  // If there is a previous timeout, clear it
+  if (timeout != null) {
+      clearTimeout(timeout);
+  } else {
+      // if there is no previous timeout then add a save message
+      $(".jumbotron").append(saveMessage);
+  }
+
+  // setting a 3 second timeout for save message to disappear 
+  timeout = setTimeout(function () {
+      saveMessage.remove();
+      timeout = null;
+  }, 3000);
+});
+
+timeBlock.append(hourElement).append(scheduleInput).append(saveButton);
+
+$(".container").append(timeBlock);
+
+});
+
+// check if the hour is in the past present or future and assign a class
+for (let i = 0; i < hrs.length; i++) {
+
+// starts at 0 so +9 (0 + 9) so that it represents 9am
+let eachtimeBlock = moment().hour(i + 9);
+// input-${i} corresponds with the unique id of each element 
+let currentIndex = $(`#input-${i}`);
+
+if (moment().isBefore(eachtimeBlock)) {
+  currentIndex.addClass("future");
+} else if (moment().isAfter(eachtimeBlock)) {
+  currentIndex.addClass("past");
+} else {
+  currentIndex.addClass("present");
+}
+}
+});
